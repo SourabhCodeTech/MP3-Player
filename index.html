@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="https://img.utdstc.com/icon/e42/adc/e42adcf3ebcae1284213cb1977af8ff991625a8f1b2bf4a3a7d438094ba1ca61:200" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Edu+AU+VIC+WA+NT+Pre:wght@400..700&display=swap" rel="stylesheet">
+    <title>Mp3 Player</title>
+    <style>
+        * {
+            background: #0d140b;
+            color: white;
+        }
+        
+        body{font-family: "Edu AU VIC WA NT Pre", cursive;}
+        .audioPlayerContainer {
+            width: 50vw;
+            margin: auto;
+        }
+
+        #videoPlayer{
+            width: 50vw;
+            height: 30vh;
+        }
+
+        .controls {
+            display: none;
+            width: 100%;
+        }
+
+        .bottom {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .main {
+            display: flex;
+            border: 2px solid #e5e3e3;
+            border-radius: 3px;
+            padding: 3px;
+            width: fit-content;
+        }
+
+        input {
+            outline: none;
+        }
+
+        /* Style the custom progress bar container */
+        .progress-container {
+            width: 100%;
+            background-color: #000000;
+            border-radius: 5px;
+            cursor: pointer;
+            height: 10px;
+        }
+
+        /* Style the custom progress bar */
+        .progress-bar {
+            width: 0;
+            height: 100%;
+            background-color: #007bff;
+            border-radius: 5px;
+        }
+
+        input {
+            font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+            font-weight: 600;
+        }
+
+        button {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+        }
+
+        .bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-left: 15px;
+            padding-right: 25px;
+        }
+
+        .bottom-right {
+            display: flex;
+            width: 5vw;
+        }
+    </style>
+</head>
+
+<body>
+    <h1 style="font-weight: 700;">Mp3 Player</h1>
+    <div class="audioPlayerContainer">
+        <input class="main" type="file" id="fileInput" accept="audio/video">
+
+        <div id="audioFile"></div>
+        <p id="filename"></p>
+        <div class="controls" id="controls">
+            <div class="top">
+                <div class="progress-container" onclick="seek(event)">
+                    <div class="progress-bar" id="progressBar"></div>
+                </div>
+            </div>
+            <div class="bottom" style="font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;">
+                <p id="play" style="cursor: pointer;">▶</p>
+                <div class="mid">
+                    <p id="time"></p>
+                </div>
+                <div class="bottom-right">
+                    <button id="incSpeed"><i class="fa-solid fa-circle-plus"></i></button>
+                    <div id="originalSp">1</div>
+                    <button id="decSpeed"><i class="fa-sharp fa-solid fa-circle-minus"></i></button>
+                </div>
+            </div>
+        </div>
+        <a id="reloadBtn" style="display: none;" href="">Play Next</a>
+    </div>
+
+
+
+    <script>
+
+        // dECLARAing Input Tag
+        let fileInput = document.getElementById('fileInput')
+        // Declaring Audio Tag
+        let audioTag = document.getElementsByTagName("video")[0];
+
+        // Declaring Increase Speed
+        let increaseSp = document.getElementById("incSpeed");
+
+        // Declaring Decrease Speed
+        let decreaseSp = document.getElementById("decSpeed");
+
+        // Declaring Origin Speed 
+        let originSpeed = document.getElementById("originalSp")
+        let originalSpeed = 1;
+
+        // Video Controlers
+        let audioP = document.getElementById("audioPlayer")
+        let control = document.getElementById("controls")
+
+        // Play and Pause btn
+        let play = document.getElementById("play")
+
+        fileInput.addEventListener('change', function (event) {
+            // Change display of Input File and Controlors
+            fileInput.style.display = 'none';
+            control.style.display = 'block';
+            document.getElementById("reloadBtn").style.display = "block";
+
+            const file = event.target.files[0];
+            if (file) {
+                const fileName = file.name;
+                const fileURL = URL.createObjectURL(file);
+                // console.log('File Name:', fileName);
+                // console.log('File URL:', fileURL); // Use the file URL to play the video 
+                const videoPlayer = document.createElement('video');
+                videoPlayer.id = 'videoPlayer'
+                videoPlayer.src = fileURL;
+                videoPlayer.controls = false;
+                videoPlayer.loop = true;
+                document.getElementById("audioFile").appendChild(videoPlayer);
+                document.getElementById("filename").innerHTML = fileName
+                document.getElementsByTagName("video")[0].addEventListener('timeupdate', updateProgressBar);
+            }
+        });
+
+        // Set Click AddEventListener in increase Speed
+        increaseSp.addEventListener("click", () => {
+            document.getElementsByTagName("video")[0].playbackRate += 0.5;
+            originalSpeed += 0.5;
+            originSpeed.innerHTML = originalSpeed;
+        })
+
+        // Set Click AddEventListener in decrease Speed
+        decreaseSp.addEventListener("click", () => {
+            document.getElementsByTagName("video")[0].playbackRate -= 0.5;
+            originalSpeed -= 0.5;
+            originSpeed.innerHTML = originalSpeed;
+        })
+
+
+        // Progress bar Update function 
+        function updateProgressBar() {
+            const percentage = (document.getElementsByTagName("video")[0].currentTime / document.getElementsByTagName("video")[0].duration) * 100;
+            progressBar.style.width = percentage + '%';
+            
+            function timeCal(duration, isValueInMinsFormat = false) {
+                if (isValueInMinsFormat) {
+                    // Convert minutes to seconds
+                    duration *= 60;
+                }
+
+                // Calculate minutes and seconds
+                const minutes = Math.floor(duration / 60);
+                const seconds = (duration % 60).toString().slice(0, 2);
+
+                // Format the result as MM:SS
+                return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            }
+
+            document.getElementById("time").innerHTML = `${timeCal(document.getElementsByTagName("video")[0].currentTime)}/${timeCal(document.getElementsByTagName("video")[0].duration)}`
+        }
+
+        // Progress bar function
+        function seek(event) {
+            const progressContainer = document.querySelector('.progress-container');
+            const rect = progressContainer.getBoundingClientRect();
+            const offsetX = event.clientX - rect.left;
+            const percentage = offsetX / rect.width;
+            document.getElementsByTagName("video")[0].currentTime = percentage * document.getElementsByTagName("video")[0].duration;
+        }
+
+
+        // Play and Pause funtion ***  
+        play.addEventListener("click", () => {
+            if ((document.getElementsByTagName("video")[0].paused)) {
+                document.getElementsByTagName("video")[0].play()
+                play.innerHTML = '◼'
+            }
+            else {
+                document.getElementsByTagName("video")[0].pause()
+                play.innerHTML = '▶'
+            }
+
+        })
+    </script>
+</body>
+
+</html>
