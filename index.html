@@ -4,25 +4,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="shortcut icon" href="https://img.utdstc.com/icon/e42/adc/e42adcf3ebcae1284213cb1977af8ff991625a8f1b2bf4a3a7d438094ba1ca61:200" type="image/x-icon">
+    <link rel="shortcut icon"
+        href="https://img.utdstc.com/icon/e42/adc/e42adcf3ebcae1284213cb1977af8ff991625a8f1b2bf4a3a7d438094ba1ca61:200"
+        type="image/x-icon">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Edu+AU+VIC+WA+NT+Pre:wght@400..700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Edu+AU+VIC+WA+NT+Pre:wght@400..700&display=swap"
+        rel="stylesheet">
     <title>Mp3 Player</title>
     <style>
         * {
             background: #0d140b;
             color: white;
         }
-        
-        body{font-family: "Edu AU VIC WA NT Pre", cursive;}
+
+        body {
+            font-family: "Edu AU VIC WA NT Pre", cursive;
+        }
+
         .audioPlayerContainer {
             width: 50vw;
             margin: auto;
         }
 
-        #videoPlayer{
+        #videoPlayer {
             width: 50vw;
             height: 30vh;
         }
@@ -89,13 +95,29 @@
             display: flex;
             width: 5vw;
         }
+
+        #selectV {
+            background: transparent;
+            outline: none;
+            border: 0.2px solid #574646;
+            border-radius: 2px;
+            padding: 3px;
+            margin: 10px;
+        }
     </style>
 </head>
 
 <body>
     <h1 style="font-weight: 700;">Mp3 Player</h1>
     <div class="audioPlayerContainer">
-        <input class="main" type="file" id="fileInput" accept="audio/video">
+        <select name="selectV" id="selectV">
+            <option value="blank"></option>
+            <option value="audio">audio</option>
+            <option value="video">video</option>
+        </select>
+        <small id="selectS">Select Formate</small>
+
+        <input class="main" type="file" id="fileInput">
 
         <div id="audioFile"></div>
         <p id="filename"></p>
@@ -140,7 +162,7 @@
         let originalSpeed = 1;
 
         // Video Controlers
-        let audioP = document.getElementById("audioPlayer")
+        let audioP = document.getElementById("videoPlayer")
         let control = document.getElementById("controls")
 
         // Play and Pause btn
@@ -151,6 +173,8 @@
             fileInput.style.display = 'none';
             control.style.display = 'block';
             document.getElementById("reloadBtn").style.display = "block";
+            document.getElementById("selectS").style.display = "none";
+            selectV.style.display = 'none';
 
             const file = event.target.files[0];
             if (file) {
@@ -188,7 +212,7 @@
         function updateProgressBar() {
             const percentage = (document.getElementsByTagName("video")[0].currentTime / document.getElementsByTagName("video")[0].duration) * 100;
             progressBar.style.width = percentage + '%';
-            
+
             function timeCal(duration, isValueInMinsFormat = false) {
                 if (isValueInMinsFormat) {
                     // Convert minutes to seconds
@@ -196,11 +220,12 @@
                 }
 
                 // Calculate minutes and seconds
-                const minutes = Math.floor(duration / 60);
+                const hours = Math.floor((duration / 60)/60);
+                const minutes = Math.floor((duration / 60) % 60);
                 const seconds = (duration % 60).toString().slice(0, 2);
 
                 // Format the result as MM:SS
-                return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+                return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
             }
 
             document.getElementById("time").innerHTML = `${timeCal(document.getElementsByTagName("video")[0].currentTime)}/${timeCal(document.getElementsByTagName("video")[0].duration)}`
@@ -227,6 +252,36 @@
                 play.innerHTML = '▶'
             }
 
+        })
+
+        let selectV = document.getElementById("selectV");
+        selectV.addEventListener("change", (e) => {
+            let selectValue = e.target.value;
+            console.log(e.target.value);
+            if (selectValue == 'video') {
+                fileInput.setAttribute('accept', 'video/*')
+            }
+            else if (selectValue == 'blank') {
+                alert('Please Select Formate...')
+            }
+            else {
+                fileInput.setAttribute('accept', 'audio/*')
+            }
+        })
+
+
+        // Key Control
+        window.addEventListener("keypress", (e) => {
+            // console.log(e.keyCode)
+            if (e.keyCode == 32) {
+                if (document.getElementsByTagName("video")[0].paused) {
+                    document.getElementsByTagName("video")[0].play();
+                    play.innerHTML = "◼"
+                }else {
+                    document.getElementsByTagName("video")[0].pause();
+                    play.innerHTML = "▶"
+                }
+            }
         })
     </script>
 </body>
