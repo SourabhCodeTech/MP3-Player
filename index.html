@@ -84,8 +84,6 @@
         }
 
         .bottom {
-            display: flex;
-            justify-content: space-between;
             align-items: center;
             padding-left: 15px;
             padding-right: 25px;
@@ -94,6 +92,7 @@
         .bottom-right {
             display: flex;
             width: 5vw;
+            align-items: center;
         }
 
         #selectV {
@@ -103,6 +102,39 @@
             border-radius: 2px;
             padding: 3px;
             margin: 10px;
+        }
+
+        @media only screen and (max-width: 476px) {
+            #time{
+                /* font-size: 12px; */
+                margin-left: 10px;
+            }
+
+            .bContent{
+                font-size: 12px;
+            }
+
+            .bottom-right{
+                position: relative;
+                top:30px;
+                right: 100px;
+            }
+
+            #filename{
+                font-size: 11px;
+            }
+        }
+
+        @media screen and (max-width: 365px) {
+            #time{
+                font-size: 10px;
+            }
+        }
+
+        #reloadBtn{
+            position: absolute;
+            bottom: 10px;
+            right: 20px;
         }
     </style>
 </head>
@@ -133,9 +165,9 @@
                     <p id="time"></p>
                 </div>
                 <div class="bottom-right">
-                    <button id="incSpeed"><i class="fa-solid fa-circle-plus"></i></button>
-                    <div id="originalSp">1</div>
-                    <button id="decSpeed"><i class="fa-sharp fa-solid fa-circle-minus"></i></button>
+                    <button id="incSpeed"><i class="fa-solid bContent fa-circle-plus"></i></button>
+                    <div id="originalSp" class="bContent">1</div>
+                    <button id="decSpeed"><i class="fa-sharp bContent fa-solid fa-circle-minus"></i></button>
                 </div>
             </div>
         </div>
